@@ -13,6 +13,8 @@ target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/third_party/glad/incl
 add_library(stb STATIC ${CMAKE_SOURCE_DIR}/third_party/stb/src/stb_image.cpp)
 target_include_directories(stb PUBLIC ${CMAKE_SOURCE_DIR}/third_party/stb/include)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/glm)
+
 add_executable(${TARGET} main.cpp)
 target_include_directories(${TARGET} PRIVATE include)
-target_link_libraries(${TARGET} glfw glad stb)
+target_link_libraries(${TARGET} glfw glad stb glm)
