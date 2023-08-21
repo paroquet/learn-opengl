@@ -10,6 +10,9 @@ target_link_libraries(glfw INTERFACE ${CMAKE_SOURCE_DIR}/third_party/glfw/lib-ar
 add_library(glad STATIC ${CMAKE_SOURCE_DIR}/third_party/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/third_party/glad/include)
 
+add_library(stb STATIC ${CMAKE_SOURCE_DIR}/third_party/stb/src/stb_image.cpp)
+target_include_directories(stb PUBLIC ${CMAKE_SOURCE_DIR}/third_party/stb/include)
+
 add_executable(${TARGET} main.cpp)
 target_include_directories(${TARGET} PRIVATE include)
-target_link_libraries(${TARGET} glfw glad)
+target_link_libraries(${TARGET} glfw glad stb)
