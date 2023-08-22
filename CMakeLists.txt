@@ -18,3 +18,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/glm)
 add_executable(${TARGET} main.cpp)
 target_include_directories(${TARGET} PRIVATE include)
 target_link_libraries(${TARGET} glfw glad stb glm)
+
+add_executable(test_glm test_glm.cpp)
+target_link_libraries(test_glm glm)
