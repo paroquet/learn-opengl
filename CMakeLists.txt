@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 project(learn_opengl)
-set(TARGET learn_opengl)
 set(CMAKE_CXX_FLAGS "-std=c++17")
 
 add_library(glfw INTERFACE)
@@ -15,9 +14,12 @@ target_include_directories(stb PUBLIC ${CMAKE_SOURCE_DIR}/third_party/stb/includ
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/glm)
 
-add_executable(${TARGET} main.cpp)
-target_include_directories(${TARGET} PRIVATE include)
-target_link_libraries(${TARGET} glfw glad stb glm)
+list(APPEND LIBS glfw glad stb glm)
 
-add_executable(test_glm test_glm.cpp)
-target_link_libraries(test_glm glm)
+add_executable(test_start test_start.cpp)
+target_include_directories(test_start PRIVATE include)
+target_link_libraries(test_start ${LIBS})
+
+add_executable(test_light test_light.cpp)
+target_include_directories(test_light PRIVATE include)
+target_link_libraries(test_light ${LIBS})
