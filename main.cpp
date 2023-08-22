@@ -172,25 +172,21 @@ int main()
 
         // render container
         ourShader.use();
-        glm::mat4 trans(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        glm::mat4 model(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 view(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        glm::mat4 projection(1.0f);
+        float aspect = static_cast<float>(SCR_WIDTH) / SCR_HEIGHT;
+        projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+        ourShader.setMat4F("model", glm::value_ptr(model));
+        ourShader.setMat4F("view", glm::value_ptr(view));
+        ourShader.setMat4F("projection", glm::value_ptr(projection));
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-        glm::mat4 trans2(1.0f);
-        trans2 = glm::translate(trans2, glm::vec3(-0.5f, 0.5f, 0.0f));
-        trans2 = glm::rotate(trans2, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-        // unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans2));
-
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
