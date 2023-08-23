@@ -188,6 +188,15 @@ int main()
         objectShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
         objectShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
         objectShader.setVec3("viewPos", camera.Position);
+
+        objectShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+        objectShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+        objectShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+        objectShader.setFloat("material.shininess", 32.0f);
+
+        objectShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        objectShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
+        objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
