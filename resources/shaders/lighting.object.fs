@@ -2,6 +2,7 @@
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D emission;
     float shininess;
 }; 
 uniform Material material;
@@ -25,8 +26,9 @@ void main()
 {
     vec3 diffuse_tex = vec3(texture(material.diffuse, TexCoords));
     vec3 specular_text = vec3(texture(material.specular, TexCoords));
+    vec3 emission_text = vec3(texture(material.emission, TexCoords));
 
-    vec3 ambient = light.ambient * diffuse_tex;
+    vec3 ambient = light.ambient * diffuse_tex + emission_text;
 
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);

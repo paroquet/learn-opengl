@@ -148,8 +148,9 @@ int main()
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
-    unsigned int texture1  = loadTexture(get_texture("container2.png").c_str());
-    unsigned int texture2  = loadTexture(get_texture("container2_specular.png").c_str());
+    unsigned int texture1 = loadTexture(get_texture("container2.png").c_str());
+    unsigned int texture2 = loadTexture(get_texture("container2_specular.png").c_str());
+    unsigned int texture3 = loadTexture(get_texture("matrix.jpg").c_str());
 
     // render loop
     // -----------
@@ -195,6 +196,7 @@ int main()
 
         objectShader.setInt("material.diffuse", 0);
         objectShader.setInt("material.specular", 1);
+        objectShader.setInt("material.emission", 2);
         objectShader.setFloat("material.shininess", 32.0f);
 
         objectShader.setVec3("light.position", lightPos);
@@ -206,6 +208,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, texture3);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
