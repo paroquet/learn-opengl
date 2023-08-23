@@ -125,6 +125,24 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
     };
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3( 0.7f,  0.2f,  2.0f),
+        glm::vec3( 2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3( 0.0f,  0.0f, -3.0f)
+    };
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -146,11 +164,12 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
     unsigned int texture1 = loadTexture(get_texture("container2.png").c_str());
     unsigned int texture2 = loadTexture(get_texture("container2_specular.png").c_str());
-    unsigned int texture3 = loadTexture(get_texture("matrix.jpg").c_str());
+    objectShader.use();
+    objectShader.setInt("material.diffuse", 0);
+    objectShader.setInt("material.specular", 1);
+    objectShader.setFloat("material.shininess", 32.0f);
 
     // render loop
     // -----------
@@ -174,44 +193,66 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-        // activate shader
         lightShader.use();
-        glm::mat4 model(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        lightShader.setMat4("model", model);
-        lightShader.setMat4("view", view);
-        lightShader.setMat4("projection", projection);
-
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (int i = 0; i < 4; i++) {
+            glm::mat4 lightModel(1.0f);
+            lightModel = glm::translate(lightModel, pointLightPositions[i]);
+            lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+            lightShader.setMat4("model", lightModel);
+            lightShader.setMat4("view", view);
+            lightShader.setMat4("projection", projection);
+            glBindVertexArray(lightVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         objectShader.use();
-        glm::mat4 model2(1.0f);
-        objectShader.setMat4("model", model2);
         objectShader.setMat4("view", view);
         objectShader.setMat4("projection", projection);
 
-        objectShader.setVec3("viewPos", camera.Position);
+        objectShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+        objectShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        objectShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        objectShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-        objectShader.setInt("material.diffuse", 0);
-        objectShader.setInt("material.specular", 1);
-        objectShader.setInt("material.emission", 2);
-        objectShader.setFloat("material.shininess", 32.0f);
+        for (int j = 0; j < 4; j++) {
+            std::string name = "pointLights[" + std::to_string(j) + "]";
+            objectShader.setVec3(name + ".position", pointLightPositions[j]);
 
-        objectShader.setVec3("light.position", lightPos);
-        objectShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-        objectShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-        objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat(name + ".constant",  1.0f);
+            objectShader.setFloat(name + ".linear",    0.09f);
+            objectShader.setFloat(name + ".quadratic", 0.032f);
+
+            objectShader.setVec3(name + ".ambient", 0.2f, 0.2f, 0.2f);
+            objectShader.setVec3(name + ".diffuse", 0.5f, 0.5f, 0.5f);
+            objectShader.setVec3(name + ".specular", 1.0f, 1.0f, 1.0f);
+        }
+
+        objectShader.setVec3("spotLight.position",  camera.Position);
+        objectShader.setVec3("spotLight.direction", camera.Front);
+        objectShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        objectShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+        objectShader.setVec3("spotLight.ambient", 0.1f, 0.1f, 0.1f);
+        objectShader.setVec3("spotLight.diffuse", 0.8f, 0.8f, 0.8f);
+        objectShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        objectShader.setFloat("spotLight.constant", 1.0f);
+        objectShader.setFloat("spotLight.linear", 0.09f);
+        objectShader.setFloat("spotLight.quadratic", 0.032f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, texture3);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for (int i = 0; i < 10; i++) {
+            glm::mat4 model(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            objectShader.setMat4("model", model);
+            
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
