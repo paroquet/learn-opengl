@@ -14,6 +14,10 @@ target_include_directories(stb PUBLIC ${CMAKE_SOURCE_DIR}/third_party/stb/includ
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/glm)
 
+# add_library(freetype INTERFACE)
+# target_link_libraries(freetype INTERFACE ${CMAKE_SOURCE_DIR}/third_party/freetype/libs/libfreetype.a)
+# target_include_directories(freetype INTERFACE ${CMAKE_SOURCE_DIR}/third_party/freetype/include)
+
 find_package(assimp REQUIRED)
 
 list(APPEND LIBS glfw glad stb glm assimp::assimp)
