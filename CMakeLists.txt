@@ -26,6 +26,10 @@ add_executable(test_draw_triangle src/test_draw_triangle.cpp)
 target_include_directories(test_draw_triangle PRIVATE include)
 target_link_libraries(test_draw_triangle ${LIBS})
 
+add_executable(test_draw_texture src/test_draw_texture.cpp)
+target_include_directories(test_draw_texture PRIVATE include)
+target_link_libraries(test_draw_texture ${LIBS})
+
 add_executable(test_start src/test_start.cpp)
 target_include_directories(test_start PRIVATE include)
 target_link_libraries(test_start ${LIBS})
